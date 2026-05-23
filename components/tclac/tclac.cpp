@@ -120,9 +120,14 @@ void tclacClimate::update() {
 
 void tclacClimate::readData() {
 	
-	current_temperature = float((( (dataRX[17] << 8) | dataRX[18] ) / 374 - 32)/1.8);
-	target_temperature = (dataRX[FAN_SPEED_POS] & SET_TEMP_MASK) + 16;
+	// current_temperature = float((( (dataRX[17] << 8) | dataRX[18] ) / 374 - 32)/1.8);
+	// target_temperature = (dataRX[FAN_SPEED_POS] & SET_TEMP_MASK) + 16;
+    // НОВЫЙ КОД из lNikazzzl
+    // Байт 16 хранит целевую температуру, умноженную на 2 (для поддержки половинок)
+    target_temperature = (float)dataRX[16] / 2.0;
 
+    // Байт 17 хранит текущую температуру в помещении, также умноженную на 2
+    current_temperature = (float)dataRX[17] / 2.0;
 	//ESP_LOGD("TCL", "TEMP: %f ", current_temperature);
 
 	if (dataRX[MODE_POS] & ( 1 << 4)) {
