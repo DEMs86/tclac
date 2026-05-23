@@ -85,7 +85,7 @@ void tclacClimate::loop()  {
 
 		//auto raw = getHex(dataRX, 5);
 		
-		//ESP_LOGD("TCL", "first 5 byte : %s ", raw.c_str());
+		ESP_LOGD("TCL", "first 5 byte : %s ", raw.c_str());
 
 		// Из первых 5 байт нам нужен пятый- он содержит длину сообщения
 		esphome::uart::UARTDevice::read_array(dataRX+5, dataRX[4]+1);
@@ -94,7 +94,7 @@ void tclacClimate::loop()  {
 
 		//raw = getHex(dataRX, sizeof(dataRX));
 		
-		//ESP_LOGD("TCL", "RX full : %s ", raw.c_str());
+		ESP_LOGD("TCL", "RX full : %s ", raw.c_str());
 		
 		// Проверяем контрольную сумму
 		if (check != dataRX[60]) {
@@ -102,7 +102,7 @@ void tclacClimate::loop()  {
 			this->dataShow(0,0);
 			return;
 		} else {
-			//ESP_LOGD("TCL", "checksum OK %x", check);
+			ESP_LOGD("TCL", "checksum OK %x", check);
 		}
 		this->dataShow(0,0);
 		// Прочитав все из буфера приступаем к разбору данных
@@ -120,15 +120,14 @@ void tclacClimate::update() {
 
 void tclacClimate::readData() {
 	
-	// current_temperature = float((( (dataRX[17] << 8) | dataRX[18] ) / 374 - 32)/1.8);
-	// target_temperature = (dataRX[FAN_SPEED_POS] & SET_TEMP_MASK) + 16;
+	current_temperature = float((( (dataRX[17] << 8) | dataRX[18] ) / 374 - 32)/1.8);
+	target_temperature = (dataRX[FAN_SPEED_POS] & SET_TEMP_MASK) + 16;
     // НОВЫЙ КОД из lNikazzzl
     // Байт 16 хранит целевую температуру, умноженную на 2 (для поддержки половинок)
-    target_temperature = (float)dataRX[16] / 2.0;
-
+    // target_temperature = (float)dataRX[16] / 2.0;
     // Байт 17 хранит текущую температуру в помещении, также умноженную на 2
-    current_temperature = (float)dataRX[17] / 2.0;
-	//ESP_LOGD("TCL", "TEMP: %f ", current_temperature);
+    // current_temperature = (float)dataRX[17] / 2.0;
+	ESP_LOGD("TCL", "TEMP: %f ", current_temperature);
 
 	if (dataRX[MODE_POS] & ( 1 << 4)) {
 		// Если кондиционер включен, то разбираем данные для отображения
