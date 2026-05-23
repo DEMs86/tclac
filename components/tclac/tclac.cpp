@@ -257,10 +257,10 @@ void tclacClimate::takeControl() {
 	
 	// Включаем или отключаем пищалку в зависимости от переключателя в настройках
 	if (beeper_status_){
-		ESP_LOGD("TCL", "Beep mode ON");
+		ESP_LOGD("TCL", "Beep mode ON!");
 		dataTX[7] += 0b00100000;
 	} else {
-		ESP_LOGD("TCL", "Beep mode OFF");
+		ESP_LOGD("TCL", "Beep mode OFF!");
 		dataTX[7] += 0b00000000;
 	}
 	
