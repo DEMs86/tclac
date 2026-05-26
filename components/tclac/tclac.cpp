@@ -124,7 +124,7 @@ void tclacClimate::readData() {
 	// [МОДИФИЦИРОВАНО ИЗ lNikazzzl] Чистый разбор температур с поддержкой шага 0.5 градусов
 	// Байт 16 хранит целевую температуру, умноженную на 2
 	int offset = 56;
-	target_temperature = (float)dataRX[16] / 2.0;
+	target_temperature = (float)(dataRX[8] - 0x80);
 	// Байт 17 хранит текущую температуру в помещении, также умноженную на 2
 	current_temperature = (float)(dataRX[17]-offset) / 2.0;
 
@@ -251,7 +251,7 @@ void tclacClimate::takeControl() {
 	dataTX[32] = 0b00000000;
 	dataTX[33] = 0b00000000;
 	
-	uint8_t target_temperature_set = 31-(int)target_temperature;
+	uint8_t target_temperature_set = (int)target_temperature;
 	
 	// Включаем или отключаем пищалку в зависимости от переключателя в настройках
 	if (beeper_status_){
