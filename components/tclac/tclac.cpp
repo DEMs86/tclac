@@ -90,7 +90,7 @@ void tclacClimate::loop()  {
 		ESP_LOGV("TCL_UART", "Raw byte [4] (Length): 0x%02X", dataRX[4]);
 
 		// Из первых 5 байт нам нужен пятый - он содержит длину сообщения
-		esphome::uart::UARTDevice::read_array(dataRX+5, dataRX[4]+1);
+		esphome::uart::UARTDevice::read_array(dataRX+5, 56);
 
 		uint8_t check = getChecksum(dataRX, sizeof(dataRX));
 
