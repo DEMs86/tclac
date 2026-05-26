@@ -3,6 +3,7 @@
 * and modify by xaxexa
 * Refactoring & component making:
 * Соловей с паяльником 15.03.2024
+* modified by DEMs86 05/2026
 **/
 #include "esphome.h"
 #include "esphome/core/defines.h"
