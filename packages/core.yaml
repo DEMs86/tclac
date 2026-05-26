@@ -92,6 +92,7 @@ esphome:
 
 uart:
   baud_rate: 9600
+  level: VERBOSE
   data_bits: 8
   parity: EVEN
   stop_bits: 1
