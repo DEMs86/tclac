@@ -59,55 +59,59 @@ void tclacClimate::setup() {
 #endif
 }
 
-void tclacClimate::loop()  {
-	// Если в буфере UART что-то есть, то читаем это что-то
-	// ESP_LOGV("TCL_UART", "Raw Byte: 0x%02X", dataRX);
-	if (esphome::uart::UARTDevice::available() > 0) {
-		dataShow(0, true);
-		dataRX[0] = esphome::uart::UARTDevice::read();
-		
-		// [ВАРИАНТ 2] Выводим самый первый байт в лог
-		ESP_LOGV("TCL_UART", "Raw header byte: 0x%02X", dataRX[0]);
+void tclacClimate::loop() {
+	static uint8_t rx_buffer[61];
+	static int rx_index = 0;
+	static uint32_t last_time = 0;
 
-		// Если принятый байт - не заголовок (0xBB), то просто покидаем цикл
-		if (dataRX[0] != 0xBB) {
-			ESP_LOGD("TCL", "Wrong byte!", dataRX[0]);
-			dataShow(0,0);
-			return;
+	// Пока в физическом порту есть хоть один непрочитанный байт
+	while (esphome::uart::UARTDevice::available() > 0) {
+		uint8_t c = esphome::uart::UARTDevice::read();
+		uint32_t now = millis();
+
+		// Если кондиционер молчал дольше 500мс - считаем старый недособранный кусок мусором и обнуляем копилку
+		if (now - last_time > 500) {
+			rx_index = 0;
+			dataShow(0, 0); // Выключаем LED приема
 		}
-		
-		// А вот если совпал заголовок (0xBB), то начинаем чтение по цепочке еще 4 байт
-		dataRX[1] = esphome::uart::UARTDevice::read();
-		ESP_LOGV("TCL_UART", "Raw byte [1]: 0x%02X", dataRX[1]);
-		
-		dataRX[2] = esphome::uart::UARTDevice::read();
-		ESP_LOGV("TCL_UART", "Raw byte [2]: 0x%02X", dataRX[2]);
-		
-		dataRX[3] = esphome::uart::UARTDevice::read();
-		ESP_LOGV("TCL_UART", "Raw byte [3]: 0x%02X", dataRX[3]);
-		
-		dataRX[4] = esphome::uart::UARTDevice::read();
-		ESP_LOGV("TCL_UART", "Raw byte [4] (Length): 0x%02X", dataRX[4]);
+		last_time = now;
 
-		// Из первых 5 байт нам нужен пятый - он содержит длину сообщения
-		esphome::uart::UARTDevice::read_array(dataRX+5, 56);
+		// Ждем стартовый байт
+		if (rx_index == 0) {
+			if (c == 0xBB) {
+				rx_buffer[rx_index++] = c;
+				dataShow(0, 1); // Включаем LED приема
+			}
+			// Все остальные байты (0x00, 0xFF, 0xFC) просто игнорируем
+		} 
+		// Если стартовый поймали, терпеливо собираем остальные
+		else {
+			rx_buffer[rx_index++] = c;
 
-		uint8_t check = getChecksum(dataRX, sizeof(dataRX));
+			// Как только копилка наполнилась (61 байт)
+			if (rx_index == 61) {
+				dataShow(0, 0); // Выключаем LED приема
+				
+				// Копируем собранный пакет в основной буфер класса
+				for(int i = 0; i < 61; i++) {
+					dataRX[i] = rx_buffer[i];
+				}
+				rx_index = 0; // Сбрасываем копилку для следующего пакета
 
-		// [ИСПРАВЛЕНО] Выводим полный дамп RX пакета через встроенный хелпер ESPHome
-		ESP_LOGD("TCL", "RX full : %s ", format_hex_pretty(dataRX, sizeof(dataRX)).c_str());
-		
-		// Проверяем контрольную сумму
-		if (check != dataRX[60]) {
-			ESP_LOGD("TCL", "Invalid checksum %x", check);
-			this->dataShow(0,0);
-			return;
-		} else {
-			ESP_LOGD("TCL", "checksum OK %x", check);
+				// Выводим в лог полный красивый пакет
+				ESP_LOGD("TCL", "RX full : %s ", format_hex_pretty(dataRX, sizeof(dataRX)).c_str());
+
+				// Сверяем контрольную сумму
+				uint8_t check = getChecksum(dataRX, sizeof(dataRX));
+				if (check != dataRX[60]) {
+					ESP_LOGD("TCL", "Invalid checksum %02X", check);
+				} else {
+					ESP_LOGD("TCL", "Checksum OK %02X", check);
+					// Бинго! Пакет цел. Парсим температуру в Home Assistant
+					this->readData();
+				}
+			}
 		}
-		this->dataShow(0,0);
-		// Прочитав все из буфера приступаем к разбору данных
-		this->readData();
 	}
 }
 
