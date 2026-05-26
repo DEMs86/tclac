@@ -464,7 +464,7 @@ void tclacClimate::takeControl() {
 	}
 
 	// Установка температуры
-	dataTX[9] = target_temperature_set;
+	dataTX[8] = target_temperature_set;
 		
 	// Собираем массив байт для отправки в кондиционер
 	dataTX[0] = 0xBB;	//стартовый байт заголовка
