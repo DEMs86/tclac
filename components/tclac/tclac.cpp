@@ -477,9 +477,9 @@ void tclacClimate::takeControl() {
 	dataTX[3] = 0x03;	//0x03 - управление, 0x04 - опрос
 	dataTX[4] = 0x20;	//0x20 - управление, 0x19 - опрос
 	dataTX[5] = 0x03;	//??
-	//dataTX[6] = 0x01;	//??
-	dataTX[6] = 0x00;
-	dataTX[7] = 0x00;
+	dataTX[6] = 0x01;	//??
+	//dataTX[6] = 0x00;
+	//dataTX[7] = 0x00;
 	//dataTX[8] = 0x01;	//целевая температура DEMs86
 	dataTX[12] = 0x00;	//fahrenheit,ontimer(6),0 cf 80=f 0=c
 	dataTX[13] = 0x01;	//??
