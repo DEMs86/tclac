@@ -506,13 +506,23 @@ void tclacClimate::takeControl() {
 }
 
 // Отправка данных в кондиционер
+//void tclacClimate::sendData(uint8_t * message, uint8_t size) {
+//	tclacClimate::dataShow(1,1);
+//	this->esphome::uart::UARTDevice::write_array(message, size);
+//	ESP_LOGD("TCL", "Message to TCL sended...");
+//	tclacClimate::dataShow(1,0);
+//}
 void tclacClimate::sendData(uint8_t * message, uint8_t size) {
 	tclacClimate::dataShow(1,1);
+	// Отправляем данные в UART
 	this->esphome::uart::UARTDevice::write_array(message, size);
-	ESP_LOGD("TCL", "Message to TCL sended...");
+	// ======= ВЫВОДИМ ОТПРАВЛЕННЫЙ ПАКЕТ В ЛОГ =======
+	// Используем уровень ESP_LOGI (Info), чтобы точно видеть его в консоли
+	ESP_LOGI("TCL_TX", "TX PACKET SENDED: %s", format_hex_pretty(message, size).c_str());
+	// ===============================================
+
 	tclacClimate::dataShow(1,0);
 }
-
 // Устаревший метод форматирования строк, заменен на внутренний format_hex_pretty
 String tclacClimate::getHex(uint8_t *message, uint8_t size) {
 	String raw;
