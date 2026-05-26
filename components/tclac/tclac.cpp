@@ -125,7 +125,7 @@ void tclacClimate::readData() {
 	// Байт 16 хранит целевую температуру, умноженную на 2
 	//int offset = 56;
 	//target_temperature = (float)(dataRX[8] - 0x80);
-	target_temperature = (dataRX[8] & 0x1F);
+	target_temperature = (dataRX[8] & 0x1F)+16.0;
 	// Байт 17 хранит текущую температуру в помещении, также умноженную на 2
 	//current_temperature = (float)(dataRX[17]-offset) / 2.0;
 	current_temperature = float((( (dataRX[17] << 8) | dataRX[18] ) / 374 - 32)/1.8);
