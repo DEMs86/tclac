@@ -92,7 +92,6 @@ esphome:
 
 uart:
   baud_rate: 9600
-  level: VERBOSE
   data_bits: 8
   parity: EVEN
   stop_bits: 1
@@ -125,6 +124,7 @@ captive_portal:
 # ОБЯЗАТЕЛЬНО отключаем логгирование через UART
 logger:
   baud_rate: 0
+  level: VERBOSE
 
 # Раздел настроек устройства:
 # - Переключатели
