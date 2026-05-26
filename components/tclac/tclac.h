@@ -3,6 +3,7 @@
 * and modify by xaxexa
 * Refactoring & component making:
 * Соловей с паяльником 15.03.2024
+* mod by DEMs86 05.2026
 **/
 
 #ifndef TCL_ESP_TCL_H
