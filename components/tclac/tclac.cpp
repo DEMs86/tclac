@@ -251,7 +251,7 @@ void tclacClimate::takeControl() {
 	dataTX[32] = 0b00000000;
 	dataTX[33] = 0b00000000;
 	
-	uint8_t target_temperature_set = (int)target_temperature;
+	uint8_t target_temperature_set = 31-(int)target_temperature;
 	
 	// Включаем или отключаем пищалку в зависимости от переключателя в настройках
 	if (beeper_status_){
@@ -283,7 +283,7 @@ void tclacClimate::takeControl() {
 			break;
 		case climate::CLIMATE_MODE_COOL:
 			dataTX[7] += 0b00000100;
-			dataTX[8] += 0b00000011;
+			dataTX[8] += 0b00000011;	
 			break;
 		case climate::CLIMATE_MODE_DRY:
 			dataTX[7] += 0b00000100;
