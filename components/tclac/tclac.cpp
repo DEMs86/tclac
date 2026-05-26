@@ -58,54 +58,50 @@ void tclacClimate::setup() {
 #endif
 }
 
-void tclacClimate::loop() {
-	static uint8_t rx_buffer[61];
-	static int rx_index = 0;
+void tclacClimate::loop()  {
+	// Если в буфере UART что-то есть, то читаем это что-то
+	if (esphome::uart::UARTDevice::available() > 0) {
+		dataShow(0, true);
+		dataRX[0] = esphome::uart::UARTDevice::read();
+		
+		// [ВАРИАНТ 2] Выводим самый первый байт в лог
+		ESP_LOGV("TCL_UART", "Raw header byte: 0x%02X", dataRX[0]);
 
-	while (esphome::uart::UARTDevice::available() > 0) {
-		uint8_t c = esphome::uart::UARTDevice::read();
-
-		// Ищем стартовый байт
-		if (rx_index == 0 && c != 0xBB) {
-			continue; 
+		// Если принятый байт - не заголовок (0xBB), то просто покидаем цикл
+		if (dataRX[0] != 0xBB) {
+			ESP_LOGD("TCL", "Wrong byte!");
+			dataShow(0,0);
+			return;
 		}
 		
-		rx_buffer[rx_index] = c;
+		// А вот если совпал заголовок (0xBB), то начинаем чтение по цепочке еще 4 байт
+		dataRX[1] = esphome::uart::UARTDevice::read();
+		dataRX[2] = esphome::uart::UARTDevice::read();
+		dataRX[3] = esphome::uart::UARTDevice::read();
+		dataRX[4] = esphome::uart::UARTDevice::read();
 
-		// Жесткий фильтр заголовков TCL от шума мультисплита
-		if (rx_index == 1 && c != 0x00 && c != 0x01) {
-			rx_index = (c == 0xBB) ? 1 : 0;
-			continue;
+		// Из первых 5 байт нам нужен пятый - он содержит длину сообщения
+		esphome::uart::UARTDevice::read_array(dataRX+5, dataRX[4]+1);
+
+		// ======= ВЫВОДИМ ПОЛНЫЙ ПАКЕТ ТУТ (ДО ВСЕХ ПРОВЕРОК) =======
+		// Выведет весь массив dataRX длиной 61 байт
+		ESP_LOGI("TCL_RAW", "FULL PACKET RECEIVED: %s", format_hex_pretty(dataRX, sizeof(dataRX)).c_str());
+		// ==========================================================
+
+		uint8_t check = getChecksum(dataRX, sizeof(dataRX));
+		
+		// Проверяем контрольную сумму
+		if (check != dataRX[60]) {
+			ESP_LOGW("TCL", "Invalid checksum %x (Expected %x)", check, dataRX[60]);
+			this->dataShow(0,0);
+			// ВРЕМЕННО КОММЕНТИРУЕМ return, чтобы пустить данные в readData() для тестов
+			// return; 
+		} else {
+			ESP_LOGD("TCL", "checksum OK %x", check);
 		}
-		if (rx_index == 2 && c != 0x01) {
-			rx_index = (c == 0xBB) ? 1 : 0;
-			continue;
-		}
-		if (rx_index == 3 && c != 0x04 && c != 0x03) {
-			rx_index = (c == 0xBB) ? 1 : 0;
-			continue;
-		}
-
-		rx_index++;
-
-		// Когда собрали полный 61-байтный пакет
-		if (rx_index == 61) {
-			rx_index = 0; // Сброс для следующего пакета
-			
-			for(int i = 0; i < 61; i++) {
-				dataRX[i] = rx_buffer[i];
-			}
-
-			ESP_LOGD("TCL", "RX full : %s ", format_hex_pretty(dataRX, sizeof(dataRX)).c_str());
-
-			uint8_t check = getChecksum(dataRX, sizeof(dataRX));
-			if (check != dataRX[60]) {
-				ESP_LOGD("TCL", "Invalid checksum %02X", check);
-			} else {
-				ESP_LOGD("TCL", "Checksum OK %02X", check);
-				this->readData();
-			}
-		}
+		this->dataShow(0,0);
+		// Прочитав все из буфера приступаем к разбору данных
+		this->readData();
 	}
 }
 
