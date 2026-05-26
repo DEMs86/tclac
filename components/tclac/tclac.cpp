@@ -282,16 +282,12 @@ void tclacClimate::takeControl() {
 			dataTX[8] += 0b00001000;
 			break;
 		case climate::CLIMATE_MODE_COOL:
-			//dataTX[7] += 0b00000100;
-			//dataTX[8] += 0b00000011;
-			dataTX[6] += 0b00000000;
-			dataTX[7] += 0b00110001;
+			dataTX[7] += 0b00000100;
+			dataTX[8] += 0b00000011;
 			break;
 		case climate::CLIMATE_MODE_DRY:
-			//dataTX[7] += 0b00000100;
-			//dataTX[8] += 0b00000010;	
-			dataTX[6] += 0b00000011;
-			dataTX[7] += 0b00110011;
+			dataTX[7] += 0b00000100;
+			dataTX[8] += 0b00000010;	
 			break;
 		case climate::CLIMATE_MODE_FAN_ONLY:
 			dataTX[7] += 0b00000100;
