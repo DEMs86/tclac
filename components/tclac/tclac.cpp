@@ -61,6 +61,7 @@ void tclacClimate::setup() {
 
 void tclacClimate::loop()  {
 	// Если в буфере UART что-то есть, то читаем это что-то
+	ESP_LOGV("TCL_RAW", "RAW Byte: 0x%02X", c);
 	if (esphome::uart::UARTDevice::available() > 0) {
 		dataShow(0, true);
 		dataRX[0] = esphome::uart::UARTDevice::read();
