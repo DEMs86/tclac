@@ -243,7 +243,7 @@ void tclacClimate::control(const climate::ClimateCall &call) {
 void tclacClimate::takeControl() {
 	
 	dataTX[7]  = 0b00000000;
-	dataTX[8]  = 0b00000000;
+	//dataTX[8]  = 0b00000000;
 	dataTX[9]  = 0b00000000;
 	dataTX[10] = 0b00000000;
 	dataTX[11] = 0b00000000;
@@ -275,27 +275,27 @@ void tclacClimate::takeControl() {
 	switch (this->mode) {
 		case climate::CLIMATE_MODE_OFF:
 			dataTX[7] += 0b00000000;
-			dataTX[8] += 0b00000000;
+			//dataTX[8] += 0b00000000;
 			break;
 		case climate::CLIMATE_MODE_AUTO:
 			dataTX[7] += 0b00000100;
-			dataTX[8] += 0b00001000;
+			//dataTX[8] += 0b00001000;
 			break;
 		case climate::CLIMATE_MODE_COOL:
 			dataTX[7] += 0b00000100;
-			dataTX[8] += 0b00000011;	
+			//dataTX[8] += 0b00000011;	
 			break;
 		case climate::CLIMATE_MODE_DRY:
 			dataTX[7] += 0b00000100;
-			dataTX[8] += 0b00000010;	
+			//dataTX[8] += 0b00000010;	
 			break;
 		case climate::CLIMATE_MODE_FAN_ONLY:
 			dataTX[7] += 0b00000100;
-			dataTX[8] += 0b00000111;	
+			//dataTX[8] += 0b00000111;	
 			break;
 		case climate::CLIMATE_MODE_HEAT:
 			dataTX[7] += 0b00000100;
-			dataTX[8] += 0b00000001;	
+			//dataTX[8] += 0b00000001;	
 			break;
 	}
 
@@ -303,35 +303,35 @@ void tclacClimate::takeControl() {
 	if (this->fan_mode.has_value()) {
 		switch(*this->fan_mode) {
 			case climate::CLIMATE_FAN_AUTO:
-				dataTX[8]	+= 0b00000000;
+				//dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000000;
 				break;
 			case climate::CLIMATE_FAN_QUIET:
-				dataTX[8]	+= 0b10000000;
+				//dataTX[8]	+= 0b10000000;
 				dataTX[10]	+= 0b00000000;
 				break;
 			case climate::CLIMATE_FAN_LOW:
-				dataTX[8]	+= 0b00000000;
+				//dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000001;
 				break;
 			case climate::CLIMATE_FAN_MIDDLE:
-				dataTX[8]	+= 0b00000000;
+				//dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000110;
 				break;
 			case climate::CLIMATE_FAN_MEDIUM:
-				dataTX[8]	+= 0b00000000;
+				//dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000011;
 				break;
 			case climate::CLIMATE_FAN_HIGH:
-				dataTX[8]	+= 0b00000000;
+				//dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000111;
 				break;
 			case climate::CLIMATE_FAN_FOCUS:
-				dataTX[8]	+= 0b00000000;
+				//dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000101;
 				break;
 			case climate::CLIMATE_FAN_DIFFUSE:
-				dataTX[8]	+= 0b01000000;
+				//dataTX[8]	+= 0b01000000;
 				dataTX[10]	+= 0b00000000;
 				break;
 		}
@@ -369,7 +369,7 @@ void tclacClimate::takeControl() {
 				dataTX[19]	+= 0b00000001;
 				break;
 			case ClimatePreset::CLIMATE_PRESET_COMFORT:
-				dataTX[8]	+= 0b00010000;
+				//dataTX[8]	+= 0b00010000;
 				break;
 		}
 	}
@@ -474,7 +474,7 @@ void tclacClimate::takeControl() {
 	dataTX[4] = 0x20;	//0x20 - управление, 0x19 - опрос
 	dataTX[5] = 0x03;	//??
 	dataTX[6] = 0x01;	//??
-	//dataTX[8] = 0x01;	//целевая температура
+	//dataTX[8] = 0x01;	//целевая температура DEMs86
 	dataTX[12] = 0x00;	//fahrenheit,ontimer(6),0 cf 80=f 0=c
 	dataTX[13] = 0x01;	//??
 	dataTX[14] = 0x00;	//0,0,halfdegree,0,0,0,0,0
@@ -493,7 +493,7 @@ void tclacClimate::takeControl() {
 	dataTX[28] = 0x00;	//??
 	dataTX[30] = 0x00;	//??
 	dataTX[31] = 0x00;	//??
-	dataTX[34] = 0x00;	//??
+	dataTX[34] = 0x00;	//?? скорость вентилятора //DEMs86
 	dataTX[35] = 0x00;	//??
 	dataTX[36] = 0x00;	//??
 	dataTX[37] = 0xFF;	//Контрольная сумма
