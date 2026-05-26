@@ -3,7 +3,7 @@
 * and modify by xaxexa
 * Refactoring & component making:
 * Соловей с паяльником 15.03.2024
-* modified by DEMs86 05/2026
+* modified by DEMs86 05.2026
 **/
 #include "esphome.h"
 #include "esphome/core/defines.h"
@@ -275,27 +275,27 @@ void tclacClimate::takeControl() {
 	switch (this->mode) {
 		case climate::CLIMATE_MODE_OFF:
 			dataTX[7] += 0b00000000;
-			//dataTX[8] += 0b00000000;
+			dataTX[8] += 0b00000000;
 			break;
 		case climate::CLIMATE_MODE_AUTO:
 			dataTX[7] += 0b00000100;
-			//dataTX[8] += 0b00001000;
+			dataTX[8] += 0b00001000;
 			break;
 		case climate::CLIMATE_MODE_COOL:
 			dataTX[7] += 0b00000100;
-			//dataTX[8] += 0b00000011;	
+			dataTX[8] += 0b00000011;	
 			break;
 		case climate::CLIMATE_MODE_DRY:
 			dataTX[7] += 0b00000100;
-			//dataTX[8] += 0b00000010;	
+			dataTX[8] += 0b00000010;	
 			break;
 		case climate::CLIMATE_MODE_FAN_ONLY:
 			dataTX[7] += 0b00000100;
-			//dataTX[8] += 0b00000111;	
+			dataTX[8] += 0b00000111;	
 			break;
 		case climate::CLIMATE_MODE_HEAT:
 			dataTX[7] += 0b00000100;
-			//dataTX[8] += 0b00000001;	
+			dataTX[8] += 0b00000001;	
 			break;
 	}
 
@@ -303,35 +303,35 @@ void tclacClimate::takeControl() {
 	if (this->fan_mode.has_value()) {
 		switch(*this->fan_mode) {
 			case climate::CLIMATE_FAN_AUTO:
-				//dataTX[8]	+= 0b00000000;
+				dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000000;
 				break;
 			case climate::CLIMATE_FAN_QUIET:
-				//dataTX[8]	+= 0b10000000;
+				dataTX[8]	+= 0b10000000;
 				dataTX[10]	+= 0b00000000;
 				break;
 			case climate::CLIMATE_FAN_LOW:
-				//dataTX[8]	+= 0b00000000;
+				dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000001;
 				break;
 			case climate::CLIMATE_FAN_MIDDLE:
-				//dataTX[8]	+= 0b00000000;
+				dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000110;
 				break;
 			case climate::CLIMATE_FAN_MEDIUM:
-				//dataTX[8]	+= 0b00000000;
+				dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000011;
 				break;
 			case climate::CLIMATE_FAN_HIGH:
-				//dataTX[8]	+= 0b00000000;
+				dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000111;
 				break;
 			case climate::CLIMATE_FAN_FOCUS:
-				//dataTX[8]	+= 0b00000000;
+				dataTX[8]	+= 0b00000000;
 				dataTX[10]	+= 0b00000101;
 				break;
 			case climate::CLIMATE_FAN_DIFFUSE:
-				//dataTX[8]	+= 0b01000000;
+				dataTX[8]	+= 0b01000000;
 				dataTX[10]	+= 0b00000000;
 				break;
 		}
@@ -369,7 +369,7 @@ void tclacClimate::takeControl() {
 				dataTX[19]	+= 0b00000001;
 				break;
 			case ClimatePreset::CLIMATE_PRESET_COMFORT:
-				//dataTX[8]	+= 0b00010000;
+				dataTX[8]	+= 0b00010000;
 				break;
 		}
 	}
