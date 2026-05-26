@@ -123,9 +123,10 @@ void tclacClimate::readData() {
 	
 	// [МОДИФИЦИРОВАНО ИЗ lNikazzzl] Чистый разбор температур с поддержкой шага 0.5 градусов
 	// Байт 16 хранит целевую температуру, умноженную на 2
-	target_temperature = (float)dataRX[16] / 2.0;
+	int offset = 56;
+	target_temperature = (float)(dataRX[16]-offset) / 2.0;
 	// Байт 17 хранит текущую температуру в помещении, также умноженную на 2
-	current_temperature = (float)dataRX[17] / 2.0;
+	current_temperature = (float)(dataRX[17]-offset) / 2.0;
 
 	ESP_LOGD("TCL", "TEMP: %f ", current_temperature);
 
